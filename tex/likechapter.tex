@@ -1,0 +1,14 @@
+\usepackage[square,numbers,sort&compress]{natbib}
+\makeatletter
+\newcommand{\l@likechapter}[2]{{\bfseries\@dottedtocline{0}{0pt}{0pt}{#1}{#2}}}
+\newcommand{\empline}{\mbox{}\newline}
+\newcommand{\likechapterheading}[1]{
+    \begin{center}
+    \textbf{\MakeUppercase{#1}}
+    \end{center}
+}
+\newcommand{\likechapter}[1]{
+    \phantomsection
+    \likechapterheading{#1}
+    \addcontentsline{toc}{likechapter}{\MakeUppercase{#1}}
+}
