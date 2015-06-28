@@ -238,11 +238,57 @@ N-граммы для N равного 1 представляют из себя 
 
 \section{Метрическая классификация, первичный вектор оценок}
 
-Каждый объект, являющийся файлом формата .doc, мы представили набором функций отображающих зависимость между номером определённой операции и временем выполнения этой операции. После перевода сырых данных, представленные утилитой PROCMON, удалось извлеч 24 различных операции: (‘QueryNameInformationFile', 'SetAllocationInformationFile', 'QueryOpen', 'QueryStandardInformationFile', 'LockFile', 'QueryEaInformationFile', 'SetBasicInformationFile', 'QueryStreamInformationFile', 'QueryBasicInformationFile', 'Thread Create', 'SetEndOfFileInformationFile', 'QueryDirectory', 'Process Profiling', 'FileSystemControl', 'Thread Exit', 'CreateFileMapping', 'Load Image', 'UnlockFileSingle', 'ReadFile', 'WriteFile', 'CloseFile', 'QueryAttributeTagFile', 'CreateFile', 'Process Start’). 
+Каждый объект, являющийся файлом формата .doc, мы представили набором функций отображающих зависимость между номером определённой операции и временем выполнения этой операции. После перевода сырых данных, представленные утилитой PROCMON, удалось извлеч 24 различных операции: 
+
+\begin{itemize}
+\item ‘QueryNameInformationFile'
+\item 'SetAllocationInformationFile'
+\item 'QueryOpen'
+\item 'QueryStandardInformationFile'
+\item 'LockFile'
+\item 'QueryEaInformationFile'
+\item 'SetBasicInformationFile'
+\item 'QueryStreamInformationFile'
+\item 'QueryBasicInformationFile'
+\item 'Thread Create'
+\item 'SetEndOfFileInformationFile'
+\item 'QueryDirectory'
+\item 'Process Profiling'
+\item 'FileSystemControl'
+\item 'Thread Exit'
+\item 'CreateFileMapping'
+\item 'Load Image'
+\item 'UnlockFileSingle'
+\item 'ReadFile'
+\item 'WriteFile'
+\item 'CloseFile'
+\item 'QueryAttributeTagFile'
+\item 'CreateFile'
+\item 'Process Start’ 
+\end{itemize}
 
 Перед тем как начинать работать с графиками, построенными по длительностям собранных операций, нам нужно произвести отбор графиков, точно неподходящих нам. Неподходящими графиками мы будем считать те, которые априори не могут повлиять на конечный результат. Это может быть, например, график с операциями, всегда выполняющихся за время равное 0. Также мы хотим выравнивать по длине графики, построенные по одному типу операций, между всеми объектами. Это нужно для избежания искусственного преимущества одного класса перед другим. Так как явным признаком заражения может являться количество точек в области определения функции, потому что процесс, в котором эксплуатируется какая-либо уязвимость, довольно часто завершается аварийно. 
 
-После такого этапа фильтрации и выравнивания у нас остаётся 14 операций: (‘QueryNameInformationFile', 'SetAllocationInformationFile', 'QueryOpen', 'QueryStandardInformationFile', 'LockFile', 'QueryBasicInformationFile', 'SetEndOfFileInformationFile', 'QueryDirectory', 'CreateFileMapping', 'UnlockFileSingle', 'ReadFile', 'WriteFile', 'CloseFile', ‘CreateFile’). ( Описать для каждого признака почему мы его отфильтровали, разделить на группы по причине. Описать процесс отсечения операций с конца графика. )
+После такого этапа фильтрации и выравнивания у нас остаётся 14 операций:
+
+\begin{itemize}
+\item ‘QueryNameInformationFile'
+\item 'SetAllocationInformationFile'
+\item 'QueryOpen'
+\item 'QueryStandardInformationFile'
+\item 'LockFile'
+\item 'QueryBasicInformationFile'
+\item 'SetEndOfFileInformationFile'
+\item 'QueryDirectory'
+\item 'CreateFileMapping'
+\item 'UnlockFileSingle'
+\item 'ReadFile'
+\item 'WriteFile'
+\item 'CloseFile'
+\item ‘CreateFile’
+\end{itemize}
+
+ ( Описать для каждого признака почему мы его отфильтровали, разделить на группы по причине. Описать процесс отсечения операций с конца графика. )
 
 Для создания и проверки качества модели, нам необходимо разделить исходную выборку на две части: обучающую и тестовую. Далее будем обучать наш метод на одной выборке и получать результаты для оценки на второй. Как и говорилось ранее, обучать мы будем метод одного ближайщего соседа. Весь алгоритм создания классификатора можно свести к следующим действиям: на этапе обучения мы просто запоминаем выборку, переданную нам, а во время предсказания меток для новых объектов мы с помощью ранее описанного алгоритма DTW находим ближайший график, возвращая его метку класса в качестве ответа.
 
@@ -296,7 +342,6 @@ N-граммы для N равного 1 представляют из себя 
 
 Для оценки качества классификации данной конструкции мы разделим исходную выборку объектов на три множества: A, B и C. Используя выборку A, мы будем обучать базовые алгоритмы одного ближайшего соседа, затем предсказав для выборок B и C метки классов по каждому из 14 классификаторов. Таким образом мы получим набор из промежуточных векторов, представляющих матрицу объект-признак. Как последний этап создания классификатора, мы обучим линейный мета-алгоритм на выборке B и предскажем метки классов для объектов из выборки C. Получив качество предсказания выборки C, мы можем поменять между собой выборки B и C и проделать все шаги повторно, получив новый вариант оценок качества. Таким образом, меняя выборки для обучения каждого из слоёв классификаторов, мы сможем получить 6 варинтов оценок, которые стоит усреднить для борьбы с шумом. На каждом этапе построения моделей важно делать обучение на непересекающихся выборках, иначе измеренное качество может получится смещённым.
 
-\newpage
 \bgroup
 \def\arraystretch{1.5}%  1 is the default, change whatever you need
 \begin{table}[ht]
