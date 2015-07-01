@@ -25,3 +25,19 @@
 
 \usepackage[nodisplayskipstretch]{setspace}
 \setstretch{1.5}
+
+\usepackage[title,titletoc]{appendix}
+ 
+\titleformat{\paragraph}[display]
+    {\filcenter}
+    {\MakeUppercase{\chaptertitlename} \thechapter}
+    {8pt}
+    {\bfseries}{}
+\titlespacing*{\paragraph}{0pt}{-30pt}{8pt}
+ 
+\newcommand{\append}[1]{ 
+    \clearpage
+    \stepcounter{chapter}    
+    \paragraph{\MakeUppercase{#1}}
+    \empline
+    \addcontentsline{toc}{likechapter}{\MakeUppercase{\chaptertitlename~\Asbuk{chapter}\;#1}}}
